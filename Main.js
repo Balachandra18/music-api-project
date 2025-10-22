@@ -30,4 +30,4 @@ s3Conncetion.checkConnection() // Using the method you added to the exported cli
 let port=5000 || process.env.port
 app.get('/',(req,res)=>{res.send(`<h1>Server runing on the port ${port}</h1>`)})
 app.use('/music',routes);
-app.listen(port,()=>{console.log('server runing');})
+app.listen(port,()=>{console.log('server runing'+port);})
