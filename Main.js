@@ -22,9 +22,9 @@ pgconnection.connect()
 
 s3Conncetion.checkConnection() // Using the method you added to the exported client
 .then(() => {
-    console.log('✅ Connected to S3 bucket. Credentials are valid.');
+    console.log(' Connected to S3 bucket. Credentials are valid.');
 }).catch((err) => {
-    console.error('❌ Failed to connect to S3.');
+    console.error(' Failed to connect to S3.');
     console.error(err);
 });
 let port=5000 || process.env.port
