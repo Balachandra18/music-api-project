@@ -6,39 +6,57 @@ let routes=express.Router()
 let storage=multer.memoryStorage();
 let upload=multer({storage:storage});
 let psql=require('../Configuration/pgsqlConfig')
-let {DeleteObjectCommand}=require('@aws-sdk/client-s3')
+let {DeleteObjectCommand}=require('@aws-sdk/client-s3');
+const { configDotenv } = require('dotenv');
 
 
 
 
-routes.post('/upload',upload.single('Musicfile'),async(req,res)=>{
-    if(!req.file){
-        return res.send({message:"Please Upload Music File"});
-    }
+routes.post('/upload',upload.fields([{name:"song",maxCount:1},{name:"song_video",maxCount:1}]),async(req,res)=>{
+   
+   const songFile = req.files['song'][0];
+   const song_video=req.files['song_video'][0];
+   
+  
 
 
-    let { movie_name,music_director,actor_name,actress_name,artist}=req.body;
+    let { song_name,movie_name,music_director,actor_name,actress_name,artist,producer}=req.body;
 
-    let insertquery=`INSERT INTO musicdata (name,movie_name, music_director, actor_name, actress_name,songurl,artist,etag,versionid,requestid)
-      VALUES ($1, $2, $3, $4, $5, $6, $7,$8,$9,$10)
+    let insertquery=`INSERT INTO musicdata (song_name,movie_name,music_director,actor_name,actress_name,song_url,artist,song_video_url,producer)
+      VALUES ($1, $2, $3, $4, $5, $6, $7,$8,$9)
       RETURNING *;
     `;
 
-    let filedata={
+    let songfiledata={
         Bucket:process.env.Bucket_Name,
-        Key:req.file.originalname,
-        Body:req.file.buffer,
-        ContentType:req.file.mimetype
+        Key:songFile.originalname,
+        Body:songFile.buffer,
+        ContentType:songFile.mimetype
     }
 
-    try{
-    let command=new PutObjectCommand(filedata);
-    let response=await S3.send(command);
-    console.log(req.file.originalname);
-    let url=`https://${process.env.Bucket_Name}.s3.${process.env.Bucket_Region}.amazonaws.com/${encodeURIComponent(req.file.originalname)}`;
-    console.log(url)
+    let videofiledata={
+       Bucket:process.env.Bucket_Name,
+        Key:song_video.originalname,
+        Body:song_video.buffer,
+        ContentType:song_video.mimetype
+    }
 
-    let values=[req.file.originalname,movie_name,music_director,actor_name,actress_name,url,artist,response.ETag,response.VersionId,response.$metadata.requestId];
+
+
+    try{
+    let songcommand=new PutObjectCommand(songfiledata);
+    let response=await S3.send(songcommand);
+
+    
+    let videocommand=new PutObjectCommand(videofiledata);
+    let  videoresponse=await S3.send(videocommand)
+
+   
+
+
+    let song_url=`https://${process.env.Bucket_Name}.s3.${process.env.Bucket_Region}.amazonaws.com/${encodeURIComponent(songFile.originalname)}`;
+    let song_video_url=`https://${process.env.Bucket_Name}.s3.${process.env.Bucket_Region}.amazonaws.com/${encodeURIComponent(song_video.originalname)}`
+    let values=[song_name,movie_name,music_director,actor_name,actress_name,song_url,artist,song_video_url,producer];
     let databaseresponse=await psql.query(insertquery,values);
     res.status(200).json({message:" data Submitted Successfully",inserted:databaseresponse.rows[0],status:200})
    console.log(response)
