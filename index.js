@@ -3,9 +3,9 @@ dotenv.config()
 let express=require('express')
 let multer=require('multer')
 let cors=require('cors')
-let routes=require('./ControllerTable/AllRoutes')
+let routes=require('./ControllerTable/MusicRoutes')
 let s3Conncetion=require('./Configuration/S3Config')
- 
+let userroutes=require('./ControllerTable/userRoutes')
 
 let app=express()
 app.use(express.json())
@@ -30,4 +30,5 @@ s3Conncetion.checkConnection() // Using the method you added to the exported cli
 let port=5000 || process.env.port
 app.get('/',(req,res)=>{res.send(`<h1>Server runing on the port ${port}</h1>`)})
 app.use('/music',routes);
+app.use('/user',userroutes);
 app.listen(port,()=>{console.log('server runing'+port);})
