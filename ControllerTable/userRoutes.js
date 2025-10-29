@@ -34,7 +34,7 @@ routes.post('/signup',async(req,res)=>{
 
         let findemailresponse=await psql.query(emailquery,emailvalue)
         if(findemailresponse.rowCount>0){
-           return  res.status(505).json({message:"Email or number already exist or Phonenumber"})
+           return  res.status(505).json({message:"Email or Phonenumber already exist r"})
         }
      
         let response=await psql.query(query,values);

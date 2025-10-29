@@ -40,7 +40,7 @@ routes.post('/upload',upload.single('Musicfile'),async(req,res)=>{
 
     let values=[req.file.originalname,movie_name,music_director,actor_name,actress_name,url,artist,response.ETag,response.VersionId,response.$metadata.requestId];
     let databaseresponse=await psql.query(insertquery,values);
-    res.status(200).json({message:"Submitted Successfully",inserted:databaseresponse.rows[0],status:200})
+    res.status(200).json({message:" data Submitted Successfully",inserted:databaseresponse.rows[0],status:200})
    console.log(response)
     }catch(err){
         console.log(err)
