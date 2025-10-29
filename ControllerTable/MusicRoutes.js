@@ -46,11 +46,11 @@ routes.post('/upload',upload.fields([{name:"song",maxCount:1},{name:"song_video"
     try{
     let songcommand=new PutObjectCommand(songfiledata);
     let response=await S3.send(songcommand);
-
+      console.log(response)
     
     let videocommand=new PutObjectCommand(videofiledata);
     let  videoresponse=await S3.send(videocommand)
-
+    console.log(videoresponse)
    
 
 
